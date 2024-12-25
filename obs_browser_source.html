@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBS Browser Source</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #000;
+        }
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <img id="display-image" src="" alt="Display">
+    <script>
+        const imageElement = document.getElementById('display-image');
+        const jsonUrl = "https://yataibr.github.io/obs-browser-source/image-data.json";
+
+        // Atualiza dinamicamente a imagem do bot
+        setInterval(() => {
+            fetch(jsonUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao carregar JSON: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.imageUrl) {
+                        imageElement.src = data.imageUrl;
+                    }
+                })
+                .catch(error => console.error('Erro ao atualizar imagem:', error));
+        }, 3000); // Atualiza a cada 3 segundos
+    </script>
+</body>
+</html>
