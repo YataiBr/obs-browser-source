@@ -6,39 +6,49 @@
     <title>OBS Browser Source</title>
     <style>
         body {
+            margin: 0;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #000;
+            background-color: black;
         }
         img {
             max-width: 100%;
             max-height: 100%;
+            object-fit: contain;
         }
     </style>
 </head>
 <body>
-    <img id="image" src="" alt="Carregando imagem...">
+    <img id="dynamic-image" src="" alt="Dynamic Image">
+
     <script>
+        const jsonUrl = "https://yataibr.github.io/obs-browser-source/image-data.json";
+
         async function loadImage() {
             try {
-                // Busca o arquivo JSON
-                const response = await fetch('./image-data.json');
+                const response = await fetch(jsonUrl, { cache: "no-store" }); // Evitar cache
                 if (!response.ok) {
-                    throw new Error('Erro ao buscar o JSON: ' + response.statusText);
+                    console.error("Erro ao carregar o JSON:", response.status);
+                    return;
                 }
                 const data = await response.json();
-                const imgElement = document.getElementById('image');
-                
-                // Define a URL da imagem
-                imgElement.src = data.imageUrl;
+                const imageUrl = data.imageUrl;
+
+                // Atualizar a imagem no HTML
+                const imgElement = document.getElementById("dynamic-image");
+                imgElement.src = imageUrl;
+
+                console.log("Imagem carregada:", imageUrl);
             } catch (error) {
-                console.error('Erro ao carregar a imagem:', error);
+                console.error("Erro ao buscar o JSON:", error);
             }
         }
+
+        // Atualizar a cada 5 segundos para garantir a atualização
         loadImage();
+        setInterval(loadImage, 5000);
     </script>
 </body>
 </html>
