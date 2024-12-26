@@ -26,25 +26,28 @@
     <script>
         const jsonUrl = "https://yataibr.github.io/obs-browser-source/image-data.json";
 
-        async function loadImage() {
-            try {
-                const response = await fetch(jsonUrl, { cache: "no-store" }); // Evitar cache
-                if (!response.ok) {
-                    console.error("Erro ao carregar o JSON:", response.status);
-                    return;
-                }
-                const data = await response.json();
-                const imageUrl = data.imageUrl;
-
-                // Atualizar a imagem no HTML
-                const imgElement = document.getElementById("dynamic-image");
-                imgElement.src = imageUrl;
-
-                console.log("Imagem carregada:", imageUrl);
-            } catch (error) {
-                console.error("Erro ao buscar o JSON:", error);
-            }
+async function loadImage() {
+    try {
+        const response = await fetch(jsonUrl, { cache: "no-store" }); // Evitar cache do JSON
+        if (!response.ok) {
+            console.error("Erro ao carregar o JSON:", response.status);
+            return;
         }
+        const data = await response.json();
+        const imageUrl = data.imageUrl;
+
+        // Forçar atualização da imagem com um parâmetro de tempo único
+        const cacheBustingUrl = `${imageUrl}?t=${Date.now()}`;
+
+        const imgElement = document.getElementById("dynamic-image");
+        imgElement.src = cacheBustingUrl;
+
+        console.log("Imagem carregada:", cacheBustingUrl);
+    } catch (error) {
+        console.error("Erro ao buscar o JSON:", error);
+    }
+}
+
 
         // Atualizar a cada 5 segundos para garantir a atualização
         loadImage();
