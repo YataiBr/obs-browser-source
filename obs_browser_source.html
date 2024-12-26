@@ -3,54 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBS Browser Source</title>
+    <title>Exibição de Imagem</title>
     <style>
         body {
-            margin: 0;
-            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: black;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
         }
         img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+            max-width: 90%;
+            max-height: 90%;
+            border: 2px solid #ccc;
+        }
+        .error {
+            color: red;
+            font-family: Arial, sans-serif;
         }
     </style>
 </head>
 <body>
-    <img id="dynamic-image" src="" alt="Dynamic Image">
-
+    <img id="dynamic-image" src="" alt="Imagem não carregada" onerror="handleError()">
     <script>
-        const jsonUrl = "https://yataibr.github.io/obs-browser-source/image-data.json";
-
         async function loadImage() {
             try {
-                const response = await fetch(jsonUrl, { cache: "no-store" });
+                const response = await fetch("https://yataibr.github.io/obs-browser-source/image-data.json");
                 if (!response.ok) {
-                    console.error("Erro ao carregar o JSON:", response.status);
-                    return;
+                    throw new Error("Erro ao carregar JSON.");
                 }
                 const data = await response.json();
                 const imageUrl = data.imageUrl;
 
-                // Adiciona um parâmetro único para evitar cache
-                const cacheBustingUrl = `${imageUrl}?t=${Date.now()}`;
+                if (!imageUrl) {
+                    throw new Error("URL da imagem não encontrada no JSON.");
+                }
 
                 const imgElement = document.getElementById("dynamic-image");
-                imgElement.src = cacheBustingUrl;
-
-                console.log("Imagem carregada:", cacheBustingUrl);
+                imgElement.src = imageUrl;
             } catch (error) {
-                console.error("Erro ao buscar o JSON:", error);
+                handleError(error.message);
             }
         }
 
-        // Atualiza a cada 5 segundos para garantir a atualização
+        function handleError(message) {
+            document.body.innerHTML = `<p class="error">Erro ao carregar a imagem: ${message || "Imagem inválida."}</p>`;
+        }
+
         loadImage();
-        setInterval(loadImage, 5000);
     </script>
 </body>
 </html>
