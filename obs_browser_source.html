@@ -25,30 +25,31 @@
     </style>
 </head>
 <body>
-    <img id="dynamic-image" src="" alt="Imagem não carregada" onerror="handleError()">
+    <img id="dynamic-image" src="" alt="Imagem não carregada">
     <script>
         async function loadImage() {
             try {
                 const response = await fetch("https://yataibr.github.io/obs-browser-source/image-data.json");
+                console.log("Resposta do JSON:", response);
+
                 if (!response.ok) {
-                    throw new Error("Erro ao carregar JSON.");
+                    throw new Error("Erro ao carregar o JSON.");
                 }
                 const data = await response.json();
-                const imageUrl = data.imageUrl;
+                console.log("Dados do JSON:", data);
 
+                const imageUrl = data.imageUrl;
                 if (!imageUrl) {
                     throw new Error("URL da imagem não encontrada no JSON.");
                 }
 
+                console.log("URL da imagem:", imageUrl);
                 const imgElement = document.getElementById("dynamic-image");
                 imgElement.src = imageUrl;
             } catch (error) {
-                handleError(error.message);
+                console.error("Erro:", error.message);
+                document.body.innerHTML = `<p class="error">Erro ao carregar a imagem: ${error.message}</p>`;
             }
-        }
-
-        function handleError(message) {
-            document.body.innerHTML = `<p class="error">Erro ao carregar a imagem: ${message || "Imagem inválida."}</p>`;
         }
 
         loadImage();
